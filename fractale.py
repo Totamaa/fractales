@@ -27,7 +27,7 @@ for y in range(HAUTEUR):
     if n == MAX_ITERATION:
       screen.set_at((x, y), (0, 0, 0)) 
     else:
-      screen.set_at((x, y), (255, 255, 255))
+      screen.set_at((x, y), ((3 * n) % 256, (1 * n) % 256, (10 * n) % 256))
 pygame.display.flip()
 loop = True
 while loop:
