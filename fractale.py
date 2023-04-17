@@ -1,39 +1,38 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import pygame
 from tqdm import trange, tqdm
 
-# Taille de l'image
-SIZE = 5000
+# CONSTANTES
+MAX_ITERATION = 500
+XMIN, XMAX, YMIN, YMAX = -2, +0.5, -1.25, +1.25
+LARGEUR, HAUTEUR = 500, 500 # taille de la fenêtre en pixels
 
-# Définir les paramètres de la fractale
-xmin, xmax = -2.0, 0.5
-ymin, ymax = -1.25, 1.25
-radius = 2
-max_iter = int(SIZE * np.log(SIZE))  # max_iter varie en fonction de la taille
+pygame.init()
+screen = pygame.display.set_mode((LARGEUR,HAUTEUR))
+pygame.display.set_caption("Fractale de Mandelbrot")
 
-# Générer les coordonnées des points dans la grille
-x = np.linspace(xmin, xmax, SIZE)
-y = np.linspace(ymin, ymax, SIZE)
-X, Y = np.meshgrid(x, y)
 
-# Initialiser la matrice de couleurs
-colors = np.zeros_like(X, dtype=int)
-
-# Calculer la fractale
-with tqdm(total=SIZE) as pbar:
-    for i in range(X.shape[0]):
-        for j in range(X.shape[1]):
-            c = complex(X[i,j], Y[i,j])
-            z = complex(0, 0)
-            for k in range(max_iter):
-                if abs(z) > radius:
-                    colors[i,j] = k
-                    break
-                z = z*z + c
-        pbar.update(1)
-
-# Afficher l'image
-plt.figure(figsize=(8,8))
-plt.imshow(colors, cmap='twilight_shifted')
-plt.axis('off')
-plt.show()
+for y in range(HAUTEUR):
+  for x in range(LARGEUR):
+    cx = (x * (XMAX - XMIN) / LARGEUR + XMIN)
+    cy = (y * (YMIN - YMAX) / HAUTEUR + YMAX)
+    xn = 0
+    yn = 0
+    n = 0
+    while (xn * xn + yn * yn) < 4 and n < MAX_ITERATION:
+      tmp_x = xn
+      tmp_y = yn
+      xn = tmp_x * tmp_x - tmp_y * tmp_y + cx
+      yn = 2 * tmp_x * tmp_y + cy
+      n = n + 1
+    if n == MAX_ITERATION:
+      screen.set_at((x, y), (0, 0, 0)) 
+    else:
+      screen.set_at((x, y), (255, 255, 255))
+pygame.display.flip()
+loop = True
+while loop:
+  for event in pygame.event.get():
+    if event.type == pygame.QUIT:
+      loop = False
+      
+pygame.quit()
